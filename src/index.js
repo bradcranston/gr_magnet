@@ -1,7 +1,423 @@
-//Here we're importing items we'll need. You can add other imports here.
+window.loadData = (json) => {
+  const data = JSON.parse(json);
 
-//The first function. Remove this.
-const btn = document.querySelector("button");
-btn.onclick = function () {
-  alert("You ran some JavaScript");
+  let statusFilter = null;
+  let profileFilter = null;
+  let filteredData = null;
+  let param = null;
+
+  // Sort the data based on the 'Profile' element, then 'Size'
+  data.sort((a, b) => {
+    if (a.fieldData.Profile !== b.fieldData.Profile) {
+      return a.fieldData.Profile.localeCompare(b.fieldData.Profile);
+    } else {
+      return parseFloat(a.fieldData.Size) - parseFloat(b.fieldData.Size);
+    }
+  });
+
+  //add index element
+  data.map((e) => Object(e.fieldData));
+  data.forEach(function (row, index) {
+    row.fieldData.index = index;
+  });
+
+  // Function to create table body
+  function createTableBody(data) {
+    const tbody = document.createElement("tbody");
+    let currentProfile = "";
+
+    for (const item of data) {
+      const profile = item.fieldData.Profile;
+      if (profile !== currentProfile) {
+        const profileRow = document.createElement("tr");
+        const profileHeaderCell = document.createElement("th");
+        profileHeaderCell.textContent = `Profile ${profile}`;
+        profileHeaderCell.colSpan = 12; // Increased colspan to accommodate the button
+        profileRow.appendChild(profileHeaderCell);
+        tbody.appendChild(profileRow);
+        currentProfile = profile;
+      }
+
+      const infoCell = document.createElement("td");
+
+      const rowData = item.fieldData;
+      const row = document.createElement("tr");
+      row.setAttribute("data-index", item.fieldData.index); // Add data-index attribute
+      const statusIcon = document.createElement("div");
+      if (rowData.StatusMag === "Ready") {
+        statusIcon.className = "statusIcon-Black";
+      } else if (rowData.StatusMag === "Complete") {
+        statusIcon.className = "statusIcon-Green";
+      } else if (rowData.StatusMag === "In Progress") {
+        statusIcon.className = "statusIcon-Yellow";
+      }
+      statusIcon.textContent = "-";
+
+      const statusText = document.createElement("div");
+      statusText.className = "statusText";
+      statusText.textContent = rowData.StatusMag;
+      statusText.addEventListener("click", () => {
+        if (rowData.StatusMag === "Ready") {
+          statusValue = "In Progress";
+          priorClass = "statusIcon-Black";
+          newClass = "statusIcon-Yellow";
+        } else if (rowData.StatusMag === "Complete") {
+          statusValue = "Ready";
+          priorClass = "statusIcon-Green";
+          newClass = "statusIcon-Black";
+        } else if (rowData.StatusMag === "In Progress") {
+          statusValue = "Complete";
+          priorClass = "statusIcon-Yellow";
+          newClass = "statusIcon-Green";
+        }
+        processBtnStatus(item, statusValue, priorClass, newClass);
+      });
+
+      const sizeText = document.createElement("div");
+      sizeText.className = "sizeText";
+      sizeText.textContent = rowData.Size;
+
+      const qtyText = document.createElement("div");
+      qtyText.className = "qtyText";
+      qtyText.textContent = rowData.Quantity;
+
+      infoCell.appendChild(statusIcon);
+      infoCell.appendChild(statusText);
+      infoCell.appendChild(sizeText);
+      infoCell.appendChild(qtyText);
+
+      row.appendChild(infoCell);
+
+      /*
+      for (const key in rowData) {
+        if (key !== "Profile") {
+          const cell = document.createElement("td");
+          cell.textContent = rowData[key];
+          row.appendChild(cell);
+        }
+      }
+      */
+
+      // Create button and attach event listener
+      const buttonCellCut = document.createElement("td");
+      const buttonCut = document.createElement("div");
+      buttonCut.insertAdjacentHTML(
+        "afterbegin",
+        '<i class="fa-solid fa-scissors"></i>'
+      );
+      buttonCut.className = "buttonIcon";
+      buttonCut.addEventListener("click", () => {
+        item.action = 'btnCut';
+        FileMaker.PerformScriptWithOption("wv_process", JSON.stringify(item), "0")
+      });
+      buttonCellCut.appendChild(buttonCut);
+      row.appendChild(buttonCellCut);
+
+      // Create button and attach event listener
+      const buttonCellHam = document.createElement("td");
+      const buttonHam = document.createElement("div");
+      buttonHam.insertAdjacentHTML(
+        "afterbegin",
+        '<i class="fa-solid fa-hammer"></i>'
+      );
+      buttonHam.className = "buttonIcon";
+      buttonHam.addEventListener("click", () => {
+        item.action = 'btnHam';
+        FileMaker.PerformScriptWithOption("wv_process", JSON.stringify(item), "0")
+      });
+      buttonCellHam.appendChild(buttonHam);
+      row.appendChild(buttonCellHam);
+
+      // Create button and attach event listener
+      const buttonCellTime = document.createElement("td");
+      const buttonTime = document.createElement("div");
+      buttonTime.className = "buttonIcon";
+      buttonTime.insertAdjacentHTML(
+        "afterbegin",
+        '<i class="fa-solid fa-clock"></i>'
+      );
+      buttonTime.addEventListener("click", () => {
+        item.action = 'btnTime';
+        FileMaker.PerformScriptWithOption("wv_process", JSON.stringify(item), "0")      });
+      buttonCellTime.appendChild(buttonTime);
+      row.appendChild(buttonCellTime);
+
+      // Create button and attach event listener
+      const buttonCellOrd = document.createElement("td");
+      const buttonOrd = document.createElement("div");
+      buttonOrd.insertAdjacentHTML(
+        "afterbegin",
+        '<i class="fa-solid fa-receipt"></i>'
+      );
+      buttonOrd.className = "buttonIcon";
+      buttonOrd.addEventListener("click", () => {
+        item.action = 'btnOrd';
+        FileMaker.PerformScriptWithOption("wv_process", JSON.stringify(item), "0")      });
+      buttonCellOrd.appendChild(buttonOrd);
+      row.appendChild(buttonCellOrd);
+
+      const statusDiv = document.createElement("div");
+      statusDiv.classList.add("statusDiv");
+
+      const statusCut = document.createElement("div");
+      statusCut.classList.add("statusCMText");
+      if (rowData.StatusCut === "Complete") {
+        statusCut.classList.add("grayText");
+      } else if (calculateBusinessDaysSince(rowData.StatusCutTimestamp) === 2) {
+        statusCut.classList.add("yellowbg");
+      } else if (calculateBusinessDaysSince(rowData.StatusCutTimestamp) === 3) {
+        statusCut.classList.add("orangebg");
+      } else if (calculateBusinessDaysSince(rowData.StatusCutTimestamp) > 3) {
+        statusCut.classList.add("redbg");
+      }
+      statusCut.textContent =
+        "Cut: " + convertTimestamp(rowData.StatusCutTimestamp);
+
+      const statusMag = document.createElement("div");
+      statusMag.classList.add("statusCMText");
+      if (rowData.StatusMag === "Complete") {
+        statusMag.classList.add("grayText");
+      } else if (calculateBusinessDaysSince(rowData.StatusMagTimestamp) === 2) {
+        statusMag.classList.add("yellowbg");
+      } else if (calculateBusinessDaysSince(rowData.StatusMagTimestamp) === 3) {
+        statusMag.classList.add("orangebg");
+      } else if (calculateBusinessDaysSince(rowData.StatusMagTimestamp) > 3) {
+        statusMag.classList.add("redbg");
+      }
+      statusMag.textContent =
+        "Mag: " + convertTimestamp(rowData.StatusMagTimestamp);
+
+      statusDiv.appendChild(statusCut);
+      statusDiv.appendChild(statusMag);
+
+      row.appendChild(statusDiv);
+
+      tbody.appendChild(row);
+    }
+    return tbody;
+  }
+
+  // Function to create buttons for filtering by profile
+  function createFilterButtons() {
+    const profiles = Array.from(
+      new Set(data.map((item) => item.fieldData.Profile))
+    );
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "filter-buttons";
+
+    profiles.forEach((profile) => {
+      const button = document.createElement("button");
+      button.textContent = `${profile}`;
+      button.className = "buttonFilterProfile";
+      button.addEventListener("click", () => {
+        filterByProfile(profile);
+      });
+      buttonContainer.appendChild(button);
+    });
+
+    return buttonContainer;
+  }
+
+  // Function to create buttons for filtering by status
+  function createFilterButtonsStatus() {
+    const StatusMags = Array.from(
+      new Set(data.map((item) => item.fieldData.StatusMag))
+    );
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "filter-buttons";
+
+    StatusMags.forEach((StatusMag) => {
+      const button = document.createElement("button");
+      button.textContent = `${StatusMag}`;
+      button.className = "buttonFilter";
+      button.addEventListener("click", () => {
+        filterByStatusMag(StatusMag);
+      });
+      buttonContainer.appendChild(button);
+    });
+
+    const showAllButton = document.createElement("button");
+    showAllButton.textContent = "Show All";
+    showAllButton.className = "buttonFilter";
+    showAllButton.addEventListener("click", () => {
+      showAllData();
+    });
+    buttonContainer.appendChild(showAllButton);
+
+    return buttonContainer;
+  }
+
+  // Function to filter data by profile
+  function filterByProfile(profile) {
+    profileFilter = profile;
+    if (statusFilter !== null) {
+      filteredData = data.filter(
+        (item) =>
+          item.fieldData.Profile === profile &&
+          item.fieldData.StatusMag === statusFilter
+      );
+    } else {
+      filteredData = data.filter((item) => item.fieldData.Profile === profile);
+    }
+    updateTable(filteredData);
+  }
+
+  // Function to filter data by status
+  function filterByStatusMag(StatusMag) {
+    statusFilter = StatusMag;
+    if (profileFilter !== null) {
+      filteredData = data.filter(
+        (item) =>
+          item.fieldData.StatusMag === StatusMag &&
+          item.fieldData.Profile === profileFilter
+      );
+    } else {
+      filteredData = data.filter(
+        (item) => item.fieldData.StatusMag === StatusMag
+      );
+    }
+    updateTable(filteredData);
+  }
+
+  // Function to show all data
+  function showAllData() {
+    statusFilter = null;
+    profileFilter = null;
+    updateTable(data);
+  }
+
+  // Function to update the table
+  function updateTable(data) {
+    const table = document.querySelector("table");
+    const tbody = createTableBody(data); // Create the new tbody element
+    // Remember the current scroll position
+    const scrollY = table.scrollTop;
+    // Clear the table contents
+    table.innerHTML = "";
+    // Append the new tbody to the table
+    table.appendChild(tbody);
+    // Restore the scroll position
+    table.scrollTop = scrollY;
+  }
+
+  // Function to handle button click
+  function processBtn(item) {
+    // Update the quantity of the clicked item
+    data[item.fieldData.index].fieldData.Quantity = 100;
+
+    // Update the quantity cell in the clicked row
+    const rowIndex = item.fieldData.index;
+    const quantityCell = document.querySelector(
+      `tr[data-index="${rowIndex}"] .qtyText`
+    );
+    quantityCell.textContent = "100";
+
+    console.log("Processing item:", item);
+  }
+
+  // Function to handle button click
+  function processBtnStatus(item, status, priorClass, newClass) {
+    // Update the quantity of the clicked item
+    data[item.fieldData.index].fieldData.StatusMag = status;
+
+    // Update the quantity cell in the clicked row
+    const rowIndex = item.fieldData.index;
+    const statusIcon = document.querySelector(
+      `tr[data-index="${rowIndex}"] .` + priorClass
+    );
+    const statusText = document.querySelector(
+      `tr[data-index="${rowIndex}"] .statusText`
+    );
+    statusIcon.className = newClass;
+    statusText.textContent = status;
+
+    item.action = 'statusChange';
+
+    FileMaker.PerformScriptWithOption("wv_process", JSON.stringify(item), "0")
+
+
+    console.log("Processing item:", item);
+  }
+
+  // Create table container
+  const tableContainer = document.createElement("div");
+  tableContainer.style.height = "400px"; // Set a fixed height for the container
+  tableContainer.style.overflow = "auto"; // Make the container scrollable
+  document.body.appendChild(tableContainer);
+
+  // Create table
+  const table = document.createElement("table");
+  table.appendChild(createTableBody(data));
+  tableContainer.appendChild(table);
+
+  // Create filter buttons
+  const filterContainerStatus = createFilterButtonsStatus();
+  document.body.insertBefore(filterContainerStatus, tableContainer);
+
+  // Create filter buttons
+  const filterContainer = createFilterButtons();
+  document.body.insertBefore(filterContainer, tableContainer);
+
+  // Style the headers to make them sticky
+  const profileHeaders = document.querySelectorAll("th");
+  profileHeaders.forEach((header) => {
+    header.style.position = "sticky";
+    header.style.top = "0";
+  });
 };
+
+function convertTimestamp(timestamp) {
+  // Parse the input timestamp string
+  const date = new Date(timestamp);
+
+  // Extract the date components
+  const month = date.getMonth() + 1; // Months are zero-based
+  const day = date.getDate();
+  const year = date.getFullYear() % 100; // Get last two digits of the year
+
+  // Extract the time components
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12; // Convert hours to 12-hour format
+
+  // Construct the formatted timestamp string
+  const formattedTimestamp = `${month}/${day}/${year} ${hours}:${
+    minutes < 10 ? "0" : ""
+  }${minutes} ${ampm}`;
+
+  return formattedTimestamp;
+}
+
+function calculateBusinessDaysSince(timestamp) {
+  // Convert the timestamp to a Date object
+  const startDate = new Date(timestamp);
+
+  // Current date
+  const currentDate = new Date();
+
+  // Number of milliseconds in a day
+  const oneDay = 1000 * 60 * 60 * 24;
+
+  // Function to check if a given date is a weekend day (Saturday or Sunday)
+  function isWeekend(date) {
+    const day = date.getDay();
+    return day === 0 || day === 6; // 0 represents Sunday, 6 represents Saturday
+  }
+
+  let businessDays = 0;
+
+  // Iterate through each day between startDate and currentDate
+  for (
+    let date = new Date(startDate);
+    date <= currentDate;
+    date.setDate(date.getDate() + 1)
+  ) {
+    // Check if the current date is a weekend day
+    if (!isWeekend(date)) {
+      businessDays++;
+    }
+  }
+
+  return businessDays;
+}

@@ -25,21 +25,184 @@ h1 {
   margin: 0 0 10px;
 }
 
-.tintedBlackLeft {
-  background-color:#00000033;
-  color: #fff;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.2;
-  padding:11px 11px 11px 0px;
-}
 
-button {
+
+.buttonFilter {
   padding: 5px 9px 5px 9px;
   border-radius: 3px;
   font-size: 18px;
   border: 1px solid #0091CE;
   background-color: #0091CE;
   color: #fff;
+  margin: 2px;
+  width: 150px;
+}
+
+.buttonFilterProfile {
+  padding: 5px 9px 5px 9px;
+  border-radius: 3px;
+  font-size: 18px;
+  border: 1px solid #0091CE;
+  background-color: #0091CE;
+  color: #fff;
+  margin: 2px;
+  width: 100px;
+}
+
+
+.buttonIcon {
+  padding: 0px;
+  border-radius: 3px;
+  font-size: 18px;
+  border: 1px solid #0091CE;
+  background-color: #0091CE;
+  color: #fff;
+  width: 30px;
+  height: 43px;
+  text-align: center;
+  line-height: 45px;
+}
+
+
+
+
+.sub-headers-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #dddddd;
+  background-color: #f2f2f2;
+}
+
+.sub-headers{
+    background-color: black;
+  color: white;
+
+}
+
+.statusDiv{
+  top: 3px;
+  position: relative;
+}
+
+.statusText{
+  float: left;
+  line-height: 53px;
+  margin-left: 20px;
+  width:90px;
+  color: blue;
+}
+
+.statusCMText{
+  margin-left: 20px;
+  padding: 3px;
+}
+
+.orangebg{
+  background-color: lightsalmon;
+}
+
+.yellowbg{
+  background-color: lightyellow;
+}
+
+.redbg{
+  background-color: lightcoral;
+}
+
+.grayText{
+  color: gray;
+}
+
+.sizeText{
+  float: left;
+  line-height: 53px;
+  margin-left: 40px;
+  color: gray;
+  width: 50px;
+  text-align: right;
+}
+
+
+.qtyText{
+  float: left;
+  line-height: 53px;
+  margin-left: 20px;
+  color: gray;
+  width: 50px;
+  text-align: right;
+}
+
+.sub-headers-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #dddddd;
+  background-color: #f2f2f2;
+}
+
+.statusIcon-Green{
+background-color: green;
+color: green;
+width: 20px;
+height: 43px;
+border: 1px green;
+float: left;
+margin: 2px;
+border-radius: 3px;
+}
+
+.statusIcon-Black{
+  top:2px;
+  position: relative;
+  background-color: black;
+  color: black;
+  width: 20px;
+  height: 43px;
+  border: 1px black;
+  margin: 2px;
+  float: left;
+  border-radius: 3px;
+  }
+
+  .statusIcon-Yellow{
+    background-color: yellow;
+    color: yellow;
+    height: 43px;
+    border: 1px yellow;
+        width: 20px;
+    margin: 2px;
+    float: left;
+    border-radius: 3px;
+    }
+
+.main-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-height: 500px;
+}
+
+td, th {
+  text-align: left;
+}
+
+tr{
+  border: solid;
+  border-width: 1px 0;
+}
+
+th{
+  background-color: black;
+  color: white;
+  padding: 5px;
+  z-index: 100;
+  width: 100%;
+
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
 }
