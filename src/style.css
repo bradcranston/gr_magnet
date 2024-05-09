@@ -7,7 +7,6 @@ body {
   color: #000;
   background-color: #fff;
   margin: 10;
-  overflow: hidden;
 }
 
 p{
@@ -26,6 +25,18 @@ h1 {
 }
 
 
+
+.filter-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f0f0f0;
+  padding: 10px;
+  z-index: 1; /* Ensure it's above other content */
+}
+
+.filter-buttons-container button {
+  margin-right: 10px;
+}
 
 .buttonFilter {
   padding: 5px 9px 5px 9px;
@@ -179,11 +190,6 @@ border-radius: 3px;
   width: 100%;
 }
 
-.table-container {
-  overflow-x: auto;
-  max-height: 500px;
-}
-
 td, th {
   text-align: left;
 }
@@ -197,9 +203,10 @@ th{
   background-color: black;
   color: white;
   padding: 5px;
-  z-index: 100;
+  z-index: 1;
   width: 100%;
-
+  position: sticky;
+  top:0px;
 }
 
 table{

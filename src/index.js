@@ -6,14 +6,19 @@ window.loadData = (json) => {
   let filteredData = null;
   let param = null;
 
-  // Sort the data based on the 'Profile' element, then 'Size'
-  data.sort((a, b) => {
-    if (a.fieldData.Profile !== b.fieldData.Profile) {
-      return a.fieldData.Profile.localeCompare(b.fieldData.Profile);
+// Sort the data based on the 'Profile' element, then 'Size'
+data.sort((a, b) => {
+    // Compare profiles first
+    const profileComparison = a.fieldData.Profile.localeCompare(b.fieldData.Profile);
+    
+    // If profiles are different, return the comparison result
+    if (profileComparison !== 0) {
+        return profileComparison;
     } else {
-      return parseFloat(a.fieldData.Size) - parseFloat(b.fieldData.Size);
+        // If profiles are the same, sort by size in descending order
+        return parseFloat(b.fieldData.Size) - parseFloat(a.fieldData.Size);
     }
-  });
+});
 
   //add index element
   data.map((e) => Object(e.fieldData));
@@ -48,9 +53,7 @@ window.loadData = (json) => {
         statusIcon.className = "statusIcon-Black";
       } else if (rowData.StatusMag === "Complete") {
         statusIcon.className = "statusIcon-Green";
-      } else if (rowData.StatusMag === "In Progress") {
-        statusIcon.className = "statusIcon-Yellow";
-      }
+      };
       statusIcon.textContent = "-";
 
       const statusText = document.createElement("div");
@@ -58,18 +61,14 @@ window.loadData = (json) => {
       statusText.textContent = rowData.StatusMag;
       statusText.addEventListener("click", () => {
         if (rowData.StatusMag === "Ready") {
-          statusValue = "In Progress";
+          statusValue = "Complete";
           priorClass = "statusIcon-Black";
-          newClass = "statusIcon-Yellow";
+          newClass = "statusIcon-Green";
         } else if (rowData.StatusMag === "Complete") {
           statusValue = "Ready";
           priorClass = "statusIcon-Green";
           newClass = "statusIcon-Black";
-        } else if (rowData.StatusMag === "In Progress") {
-          statusValue = "Complete";
-          priorClass = "statusIcon-Yellow";
-          newClass = "statusIcon-Green";
-        }
+        };
         processBtnStatus(item, statusValue, priorClass, newClass);
       });
 
@@ -226,6 +225,14 @@ window.loadData = (json) => {
     const buttonContainer = document.createElement("div");
     buttonContainer.className = "filter-buttons";
 
+    const showAllButton = document.createElement("button");
+    showAllButton.textContent = "Show All";
+    showAllButton.className = "buttonFilter";
+    showAllButton.addEventListener("click", () => {
+      showAllData();
+    });
+    buttonContainer.appendChild(showAllButton);
+
     StatusMags.forEach((StatusMag) => {
       const button = document.createElement("button");
       button.textContent = `${StatusMag}`;
@@ -235,14 +242,6 @@ window.loadData = (json) => {
       });
       buttonContainer.appendChild(button);
     });
-
-    const showAllButton = document.createElement("button");
-    showAllButton.textContent = "Show All";
-    showAllButton.className = "buttonFilter";
-    showAllButton.addEventListener("click", () => {
-      showAllData();
-    });
-    buttonContainer.appendChild(showAllButton);
 
     return buttonContainer;
   }
@@ -341,8 +340,6 @@ window.loadData = (json) => {
 
   // Create table container
   const tableContainer = document.createElement("div");
-  tableContainer.style.height = "400px"; // Set a fixed height for the container
-  tableContainer.style.overflow = "auto"; // Make the container scrollable
   document.body.appendChild(tableContainer);
 
   // Create table
@@ -350,21 +347,27 @@ window.loadData = (json) => {
   table.appendChild(createTableBody(data));
   tableContainer.appendChild(table);
 
-  // Create filter buttons
-  const filterContainerStatus = createFilterButtonsStatus();
-  document.body.insertBefore(filterContainerStatus, tableContainer);
 
-  // Create filter buttons
-  const filterContainer = createFilterButtons();
-  document.body.insertBefore(filterContainer, tableContainer);
+// Create filter containers
+const filterContainerStatus = createFilterButtonsStatus();
+const filterContainerProfile = createFilterButtons();
 
-  // Style the headers to make them sticky
-  const profileHeaders = document.querySelectorAll("th");
-  profileHeaders.forEach((header) => {
-    header.style.position = "sticky";
-    header.style.top = "0";
-  });
-};
+// Create container to hold filter buttons
+const filterButtonsContainer = document.createElement("div");
+filterButtonsContainer.className = "filter-buttons-container";
+filterButtonsContainer.appendChild(filterContainerStatus);
+filterButtonsContainer.appendChild(filterContainerProfile);
+document.body.insertBefore(filterButtonsContainer, tableContainer);
+
+
+// Style the filterButtonsContainer to be sticky at the bottom
+filterButtonsContainer.style.position = "fixed";
+filterButtonsContainer.style.bottom = "0"; // Stick it to the bottom of the viewport
+filterButtonsContainer.style.width = "100%"; // Make it span the entire width
+filterButtonsContainer.style.zIndex = "2"; // Ensure it's above the table
+
+
+
 
 function convertTimestamp(timestamp) {
   // Parse the input timestamp string
