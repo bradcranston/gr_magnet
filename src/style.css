@@ -25,20 +25,51 @@ h1 {
 }
 
 
+/* Style for the table container */
+.table-container {
+  height: calc(100vh - 100px); /* Adjust the value as needed */
+  overflow-y: auto; /* Add vertical scrollbar if content exceeds container height */
+}
+
 
 .filter-buttons-container {
-  display: flex;
   justify-content: space-between;
   background-color: #f0f0f0;
-  padding: 10px;
+  padding: 5px;
   z-index: 1; /* Ensure it's above other content */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 2;
 }
 
 .filter-buttons-container button {
-  margin-right: 10px;
+  margin: 5px 5px 5px 5px;
 }
 
-.buttonFilter {
+.buttonFilterReady {
+  padding: 5px 9px 5px 9px;
+  border-radius: 3px;
+  font-size: 18px;
+  border: 1px solid black;
+  background-color: black;
+  color: #fff;
+  margin: 2px;
+  width: 150px;
+}
+
+.buttonFilterComplete {
+  padding: 5px 9px 5px 9px;
+  border-radius: 3px;
+  font-size: 18px;
+  border: 1px solid green;
+  background-color: green;
+  color: #fff;
+  margin: 2px;
+  width: 150px;
+}
+
+.buttonShowAll {
   padding: 5px 9px 5px 9px;
   border-radius: 3px;
   font-size: 18px;
@@ -47,14 +78,16 @@ h1 {
   color: #fff;
   margin: 2px;
   width: 150px;
+  position: fixed;
+  right: 10px;
 }
 
 .buttonFilterProfile {
   padding: 5px 9px 5px 9px;
   border-radius: 3px;
   font-size: 18px;
-  border: 1px solid #0091CE;
-  background-color: #0091CE;
+  border: 1px solid darkgray;
+  background-color: darkgray;
   color: #fff;
   margin: 2px;
   width: 100px;

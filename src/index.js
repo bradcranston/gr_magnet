@@ -227,7 +227,7 @@ data.sort((a, b) => {
 
     const showAllButton = document.createElement("button");
     showAllButton.textContent = "Show All";
-    showAllButton.className = "buttonFilter";
+    showAllButton.className = "buttonShowAll";
     showAllButton.addEventListener("click", () => {
       showAllData();
     });
@@ -236,7 +236,7 @@ data.sort((a, b) => {
     StatusMags.forEach((StatusMag) => {
       const button = document.createElement("button");
       button.textContent = `${StatusMag}`;
-      button.className = "buttonFilter";
+      button.className = "buttonFilter" + StatusMag;
       button.addEventListener("click", () => {
         filterByStatusMag(StatusMag);
       });
@@ -338,15 +338,6 @@ data.sort((a, b) => {
     console.log("Processing item:", item);
   }
 
-  // Create table container
-  const tableContainer = document.createElement("div");
-  document.body.appendChild(tableContainer);
-
-  // Create table
-  const table = document.createElement("table");
-  table.appendChild(createTableBody(data));
-  tableContainer.appendChild(table);
-
 
 // Create filter containers
 const filterContainerStatus = createFilterButtonsStatus();
@@ -357,7 +348,7 @@ const filterButtonsContainer = document.createElement("div");
 filterButtonsContainer.className = "filter-buttons-container";
 filterButtonsContainer.appendChild(filterContainerStatus);
 filterButtonsContainer.appendChild(filterContainerProfile);
-document.body.insertBefore(filterButtonsContainer, tableContainer);
+document.body.appendChild(filterButtonsContainer);
 
 
 // Style the filterButtonsContainer to be sticky at the bottom
@@ -366,8 +357,21 @@ filterButtonsContainer.style.bottom = "0"; // Stick it to the bottom of the view
 filterButtonsContainer.style.width = "100%"; // Make it span the entire width
 filterButtonsContainer.style.zIndex = "2"; // Ensure it's above the table
 
+// Append the filterButtonsContainer to the document body
+document.body.appendChild(filterButtonsContainer);
+
+// Create table container
+const tableContainer = document.createElement("div");
+tableContainer.className = "table-container"; // Add the class
+document.body.appendChild(tableContainer);
 
 
+
+
+// Create table
+const table = document.createElement("table");
+table.appendChild(createTableBody(data));
+tableContainer.appendChild(table);
 
 function convertTimestamp(timestamp) {
   // Parse the input timestamp string
@@ -423,4 +427,16 @@ function calculateBusinessDaysSince(timestamp) {
   }
 
   return businessDays;
+};
+
+// Function to dynamically adjust table container height based on filter buttons container height
+function adjustTableHeight() {
+  const filterButtonsContainerHeight = document.querySelector(".filter-buttons-container").offsetHeight;
+  const maxHeight = window.innerHeight - filterButtonsContainerHeight - 20; // Adjust padding or margin as needed
+  document.querySelector(".table-container").style.maxHeight = maxHeight + "px";
 }
+
+// Call the function to adjust the table container height initially and whenever window is resized
+window.addEventListener("resize", adjustTableHeight);
+adjustTableHeight();
+
