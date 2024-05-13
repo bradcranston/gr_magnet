@@ -1,0 +1,16 @@
+﻿Timestamp	Filename	Error	Message
+2024-05-10 10:14:59.593 -0400	jsDev.fmp12	0	*** Started consistency check of improperly closed file, total of 194 block(s) to check
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 183 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 184 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 185 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 186 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 187 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 188 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 189 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 190 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 191 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 192 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 193 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	8432	Page 194 marked free but not in free list
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	0	Reset maximum block sequence number to 914970
+2024-05-10 10:14:59.596 -0400	jsDev.fmp12	0	*** Completed consistency check, checked 194 block(s)
