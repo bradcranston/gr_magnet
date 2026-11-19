@@ -1,6 +1,12 @@
 window.loadData = (json) => {
   const data = JSON.parse(json);
 
+  const spinner = document.createElement("div");
+  spinner.className = "spinner";
+  spinner.style.display = "none"; // Initially hidden
+  document.body.appendChild(spinner);
+  
+
   let statusFilter = null;
   let profileFilter = null;
   let filteredData = null;
@@ -91,10 +97,15 @@ window.loadData = (json) => {
       qtyText.className = "qtyText";
       qtyText.textContent = rowData.Quantity;
 
+      const noteText = document.createElement("div");
+      noteText.className = "noteText";
+      noteText.textContent = rowData.c_NoteDisplay;
+
       infoCell.appendChild(statusIcon);
       infoCell.appendChild(statusText);
       infoCell.appendChild(sizeText);
       infoCell.appendChild(qtyText);
+      infoCell.appendChild(noteText);
 
       row.appendChild(infoCell);
 
@@ -281,24 +292,51 @@ window.loadData = (json) => {
     return buttonContainer;
   }
 
-  // Function to filter data by profile
+  function showSpinner() {
+    spinner.style.display = "block";
+  }
+  
+  function hideSpinner() {
+    spinner.style.display = "none";
+  }
+  
   function filterByProfile(profile) {
+    console.log("Filtering by profile:", profile); // Debugging
+    showSpinner();
     profileFilter = profile;
+    
+    // Call FileMaker to fetch new data
     FileMaker.PerformScriptWithOption("PFMj-WV003a_pullMagData", "", "0");
+  
+    // TEMP FIX: Uncomment the line below to manually call refreshData after a delay if needed
+    // setTimeout(() => refreshData(JSON.stringify(data)), 2000);
   }
-
-  // Function to filter data by status
+  
   function filterByStatusMag(StatusMag) {
+    console.log("Filtering by StatusMag:", StatusMag); // Debugging
+    showSpinner();
     statusFilter = StatusMag;
+    
+    // Call FileMaker to fetch new data
     FileMaker.PerformScriptWithOption("PFMj-WV003a_pullMagData", "", "0");
+  
+    // TEMP FIX: Uncomment the line below to manually call refreshData after a delay if needed
+    // setTimeout(() => refreshData(JSON.stringify(data)), 2000);
   }
-
-  // Function to show all data
+  
   function showAllData() {
+    console.log("Showing all data"); // Debugging
+    showSpinner();
     statusFilter = null;
     profileFilter = null;
+    
+    // Call FileMaker to fetch new data
     FileMaker.PerformScriptWithOption("PFMj-WV003a_pullMagData", "", "0");
+  
+    // TEMP FIX: Uncomment the line below to manually call refreshData after a delay if needed
+    // setTimeout(() => refreshData(JSON.stringify(data)), 2000);
   }
+  
 
   // Function to update the table
   function updateTable(data) {
@@ -315,46 +353,31 @@ window.loadData = (json) => {
   }
 
   window.refreshData = function (json) {
+    console.log("Refreshing data..."); // Debugging
+    hideSpinner(); // Hide spinner after data refresh
+    
     const data = JSON.parse(json);
-    // Sort the data based on the 'Profile' element, then 'Size'
+    
+    // Sort and filter data
     data.sort((a, b) => {
-      // Compare profiles first
-      const profileComparison = a.fieldData.Profile.localeCompare(
-        b.fieldData.Profile
-      );
-
-      // If profiles are different, return the comparison result
-      if (profileComparison !== 0) {
-        return profileComparison;
-      } else {
-        // If profiles are the same, sort by size in descending order
-        return parseFloat(b.fieldData.Size) - parseFloat(a.fieldData.Size);
-      }
+      const profileComparison = a.fieldData.Profile.localeCompare(b.fieldData.Profile);
+      return profileComparison !== 0 ? profileComparison : parseFloat(b.fieldData.Size) - parseFloat(a.fieldData.Size);
     });
-    //add index element
+  
     data.map((e) => Object(e.fieldData));
-    data.forEach(function (row, index) {
-      row.fieldData.index = index;
-    });
-
+    data.forEach((row, index) => row.fieldData.index = index);
+  
     if (profileFilter !== null && statusFilter !== null) {
-      filteredData = data.filter(
-        (item) =>
-          item.fieldData.StatusMag === statusFilter &&
-          item.fieldData.Profile === profileFilter
-      );
+      filteredData = data.filter(item => item.fieldData.StatusMag === statusFilter && item.fieldData.Profile === profileFilter);
     } else if (statusFilter !== null) {
-      filteredData = data.filter(
-        (item) => item.fieldData.StatusMag === statusFilter
-      );
+      filteredData = data.filter(item => item.fieldData.StatusMag === statusFilter);
     } else if (profileFilter !== null) {
-      filteredData = data.filter(
-        (item) => item.fieldData.Profile === profileFilter
-      );
+      filteredData = data.filter(item => item.fieldData.Profile === profileFilter);
     } else {
       filteredData = data;
     }
-
+  
+    console.log("Filtered data:", filteredData); // Debugging
     updateTable(filteredData);
   };
 
@@ -470,9 +493,28 @@ window.loadData = (json) => {
   filterButtonsContainer.style.bottom = "0"; // Stick it to the bottom of the viewport
   filterButtonsContainer.style.width = "100%"; // Make it span the entire width
   filterButtonsContainer.style.zIndex = "2"; // Ensure it's above the table
+  filterButtonsContainer.style.marginBottom = "20px"; // Adjust the value as needed
 
   // Append the filterButtonsContainer to the document body
   document.body.appendChild(filterButtonsContainer);
+
+  const toggleButton = document.createElement("button");
+  toggleButton.textContent = "Show/Hide Filters";
+  toggleButton.className = "toggle-button";
+  toggleButton.addEventListener("click", toggleFilterButtons);
+
+  // Create container to hold filter buttons and toggle button
+  const filterContainer = document.createElement("div");
+  filterContainer.appendChild(filterButtonsContainer);
+  filterContainer.appendChild(toggleButton);
+  filterContainer.className = "filter-container";
+
+  // Append the filter buttons container and toggle button to the filter container
+  filterContainer.appendChild(filterButtonsContainer);
+  filterContainer.appendChild(toggleButton);
+
+  // Append the filter container to the document body
+  document.body.appendChild(filterContainer);
 
   // Create table container
   const tableContainer = document.createElement("div");
@@ -553,6 +595,23 @@ window.loadData = (json) => {
   // Call the function to adjust the table container height initially and whenever window is resized
   window.addEventListener("resize", adjustTableHeight);
   adjustTableHeight();
+
+  function toggleFilterButtons() {
+    const filterButtonsContainer = document.querySelector(
+      ".filter-buttons-container"
+    );
+    filterButtonsContainer.classList.toggle("hidden");
+
+    // Adjust the table container height
+    const tableContainer = document.querySelector(".table-container");
+    if (filterButtonsContainer.classList.contains("hidden")) {
+      // If filter buttons are hidden, remove the max-height style from the table container
+      tableContainer.style.maxHeight = "none";
+    } else {
+      // If filter buttons are visible, recalculate and set the max-height of the table container
+      adjustTableHeight();
+    }
+  }
 };
 
 setInterval(function () {

@@ -1,7 +1,7 @@
 module.exports = {
-  widgetName: "jsDev",
+  widgetName: "magnet",
   server: "$",
-  file: "jsDev",
+  file: "GasketsRock_Static",
   uploadScript: "UploadToHTML",
   reloadScript: "Load Widget",
 };

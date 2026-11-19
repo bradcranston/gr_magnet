@@ -23,13 +23,34 @@ h1 {
   line-height: 1.2;
   margin: 0 0 10px;
 }
-
-
 /* Style for the table container */
 .table-container {
   overflow-y: auto; /* Add vertical scrollbar if content exceeds container height */
 }
 
+
+.filter-buttons-container.hidden {
+  display: none;
+}
+
+.toggle-button {
+  /* Add your styles for the toggle button here */
+  justify-content: space-between;
+  background-color: #f0f0f0;
+  padding: 5px;
+  z-index: 1; /* Ensure it's above other content */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 2;
+  
+}
+
+
+.filter-container {
+  display: flex;
+  flex-direction: column;
+}
 
 .filter-buttons-container {
   justify-content: space-between;
@@ -163,7 +184,7 @@ h1 {
 .sizeText{
   float: left;
   line-height: 53px;
-  margin-left: 40px;
+  margin-left: 15px;
   color: gray;
   width: 50px;
   text-align: right;
@@ -173,10 +194,19 @@ h1 {
 .qtyText{
   float: left;
   line-height: 53px;
+  margin-left: 15px;
+  color: gray;
+  width: 30px;
+  text-align: right;
+}
+
+
+.noteText{
+  float: left;
+  line-height: 53px;
   margin-left: 20px;
   color: gray;
-  width: 50px;
-  text-align: right;
+  text-align: left;
 }
 
 .sub-headers-table {
@@ -250,3 +280,20 @@ table{
   border-collapse: collapse;
 }
 
+.spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-top: 5px solid #000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 1000;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
